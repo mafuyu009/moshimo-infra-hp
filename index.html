@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>もしもインフラ | 投稿するたびに育つ日本地図</title>
+<meta name="description" content="@moshimo_infra の公式サイト雛形。Instagramに投稿した実データが、日本地図の上に少しずつ増えていく場所。">
+<style>
+  :root{
+    --bg:#0d1320; --bg2:#111a2e; --panel:#16203a; --line:#26355c;
+    --text:#e8edf7; --muted:#93a3c4; --accent:#ffb454; --accent2:#57c7d4;
+    --tile:#1b2947; --tile-soon:#233457;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;line-height:1.7}
+  a{color:var(--accent2)}
+  header{position:sticky;top:0;background:rgba(13,19,32,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:10}
+  .nav{max-width:1080px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .logo{font-weight:800;font-size:18px;letter-spacing:.04em;color:var(--text);text-decoration:none}
+  .logo span{color:var(--accent)}
+  .nav nav{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap}
+  .nav nav a{color:var(--muted);text-decoration:none;font-size:13px}
+  .nav nav a:hover{color:var(--text)}
+  main{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+  .hero{padding:56px 0 8px;text-align:left}
+  .hero h1{font-size:clamp(26px,5vw,42px);line-height:1.35;font-weight:800}
+  .hero h1 em{font-style:normal;color:var(--accent)}
+  .hero p{color:var(--muted);margin-top:14px;max-width:640px;font-size:15px}
+  .counts{display:flex;gap:22px;margin-top:22px;flex-wrap:wrap}
+  .counts div{font-size:13px;color:var(--muted)}
+  .counts b{display:block;font-size:24px;color:var(--text)}
+  section{margin-top:64px}
+  h2{font-size:20px;font-weight:800;border-left:4px solid var(--accent);padding-left:12px;margin-bottom:8px}
+  .sec-lead{color:var(--muted);font-size:14px;margin-bottom:20px}
+  /* タイルマップ */
+  .map-wrap{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:18px}
+  .map-grid{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;max-width:760px;margin:0 auto}
+  .tile{aspect-ratio:1/1;border-radius:6px;background:var(--tile);color:#5f7195;font-size:clamp(8px,1.6vw,12px);display:flex;align-items:center;justify-content:center;border:1px solid transparent;cursor:default;user-select:none;padding:1px;text-align:center;line-height:1.15}
+  .tile.posted{background:#2c4a73;color:#dbeafe;cursor:pointer;font-weight:700}
+  .tile.posted:hover{border-color:var(--accent)}
+  .tile.soon{background:var(--tile-soon);color:#a9c3e8;cursor:pointer;border:1px dashed #47619c}
+  .tile.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .legend{display:flex;gap:18px;justify-content:center;margin-top:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  /* データカード */
+  .card{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .card h3{font-size:22px;font-weight:800}
+  .card h3 small{font-size:12px;color:var(--accent);margin-left:10px;font-weight:700}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:16px 0}
+  .stat{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px}
+  .stat .k{font-size:11px;color:var(--muted)}
+  .stat .v{font-size:22px;font-weight:800;margin-top:2px}
+  .stat .v small{font-size:12px;color:var(--muted);font-weight:400}
+  .card .special{font-size:14px}
+  .card .source{font-size:12px;color:var(--muted);margin-top:10px}
+  .btn{display:inline-block;margin-top:14px;background:var(--accent);color:#1a1206;font-weight:700;text-decoration:none;padding:10px 18px;border-radius:999px;font-size:14px}
+  .btn.sub{background:transparent;color:var(--accent2);border:1px solid var(--accent2)}
+  /* シリーズ */
+  .series-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .series{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .series h3{font-size:16px;font-weight:800;margin-bottom:6px}
+  .series p{font-size:13px;color:var(--muted)}
+  .series .tag{display:inline-block;font-size:11px;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:1px 8px;margin-bottom:8px}
+  /* プロフィール・相談・出典 */
+  .panel{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .panel p{font-size:14px;color:#c9d4ea}
+  .panel p + p{margin-top:10px}
+  footer{border-top:1px solid var(--line);margin-top:80px;padding:26px 20px;text-align:center;color:var(--muted);font-size:12px}
+  @media (max-width:560px){ .hero{padding-top:36px} .tile{border-radius:4px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="nav">
+    <a class="logo" href="#top">もしも<span>インフラ</span></a>
+    <nav>
+      <a href="#map">育つ日本地図</a>
+      <a href="#series">シリーズ</a>
+      <a href="#profile">プロフィール</a>
+      <a href="#contact">制作・コラボの相談</a>
+      <a href="#sources">出典・データ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <h1>投稿するたびに、<em>日本地図</em>に<br>タメになる情報が増えていく場所。</h1>
+    <p>「もしも、県境に壁ができたら」の裏側にあるのは、公的統計から引いた実データです。このサイトでは、Instagramに投稿した県や海峡の実データを、出典と一緒に地図の上へ蓄積していきます。</p>
+    <div class="counts">
+      <div><b id="count-posted">–</b>投稿済みの県</div>
+      <div><b>47</b>都道府県（これから全部）</div>
+      <div><b>100%</b>数字に出典つき</div>
+    </div>
+  </div>
+
+  <section id="map">
+    <h2>育つ日本地図</h2>
+    <p class="sec-lead">色のついた県をタップすると、その県の実データカードが開きます。薄い県は「これから」。投稿が増えるたびに、地図が育ちます。</p>
+    <div class="map-wrap">
+      <div class="map-grid" id="mapGrid"></div>
+      <div class="legend">
+        <span><i style="background:#2c4a73"></i>投稿済み</span>
+        <span><i style="background:#233457;border:1px dashed #47619c"></i>近日投稿</span>
+        <span><i style="background:#1b2947"></i>これから</span>
+      </div>
+    </div>
+    <div class="card" id="dataCard"></div>
+  </section>
+
+  <section id="series">
+    <h2>シリーズ</h2>
+    <p class="sec-lead">3Dアニメーションで、インフラの「もしも」と「本当」を描くシリーズたち。</p>
+    <div class="series-grid">
+      <div class="series">
+        <span class="tag">投稿中</span>
+        <h3>県境の壁</h3>
+        <p>ある朝、県境に壁ができたら。その県の食べ物・水・籠城力を、公的統計の実データで見るシリーズ。地図の数字はこのシリーズの裏側です。</p>
+      </div>
+      <div class="series">
+        <span class="tag">投稿中</span>
+        <h3>橋シリーズ／海峡編</h3>
+        <p>「もしも、淡路島と和歌山に橋ができたら」など、海峡をめぐるシリーズ。実在のフェリー航路と所要時間が土台です。</p>
+      </div>
+      <div class="series">
+        <span class="tag">新シリーズ</span>
+        <h3>モノタビ</h3>
+        <p>生産者から食卓まで、モノが旅する道のりを追うシリーズ。空路・陸路・海路で「何が、どう運ばれているか」を見ます。</p>
+      </div>
+      <div class="series">
+        <span class="tag">新シリーズ</span>
+        <h3>透けて見えたら</h3>
+        <p>車が透けて見えたら、力はどう伝わるか。身近なインフラの仕組みを3Dで図解します。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="profile">
+    <h2>プロフィール</h2>
+    <div class="panel">
+      <p><strong>fujiwara</strong> ― 映像カメラマン／ディレクター／ドローンパイロット／ナレーター。東京の西側在住。</p>
+      <p><strong>@moshimo_infra（もしもインフラ）</strong> ― 3Dアニメーションでインフラの仕組みと「もしも」を描くアカウント。数字は公的統計で裏取りし、題材となる地域・働く人すべてに敬意を持って制作しています。</p>
+      <p>Instagram： <a href="https://www.instagram.com/moshimo_infra/" target="_blank" rel="noopener">@moshimo_infra</a> ／ YouTube： <a href="https://www.youtube.com/@moshimo_infra" target="_blank" rel="noopener">@moshimo_infra</a></p>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>制作・コラボの相談</h2>
+    <div class="panel">
+      <p>3Dアニメーション制作、コラボレーション、実写の映像制作・空撮のご相談を受け付けています。料金表は置いていません。まず内容を聞かせてください。</p>
+      <p>3Dの「もしもインフラ」と、実写の制作は別メニューです。ご相談の際にどちらの話か添えていただけるとスムーズです。</p>
+      <!-- 公開時に Google フォーム等の URL を設定する -->
+      <a class="btn" href="#" onclick="return false;">相談フォーム（公開時にリンク設定）</a>
+    </div>
+  </section>
+
+  <section id="sources">
+    <h2>出典・データについて</h2>
+    <div class="panel">
+      <p>数字はすべて公的統計の公表値か、公表値からの算出値です。算出値の場合は、その旨と計算の元を各カードに明記しています。</p>
+      <p>主な出典： 農林水産省「都道府県別食料自給率」（カロリーベース／生産額ベース）、国土交通省「水資源賦存量」、総務省「国勢調査」、各都道府県の公表資料。</p>
+      <p>「県境の壁」「籠城力」は想像のシミュレーションです。実データと想像の線引きは、各カードと各動画で明示しています。</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  もしもインフラ @moshimo_infra ― このページは雛形です。投稿が増えるたびに更新されます。
+</footer>
+
+<script>
+/* ================================================================
+   投稿台帳：IGに1本投稿したら、ここに1件追加するだけで地図が育つ。
+   status: "posted"=投稿済み（reel必須） / "soon"=近日投稿 / "none"=これから
+   数字は投稿キャプションと公的統計で確認済みのものだけを入れる。
+   ================================================================ */
+const PREFS = [
+  // [県名, x, y] タイル配置（模式図：地理院の実形状ではなくタイルマップ）
+  {name:"北海道", x:13, y:0, status:"none"},
+  {name:"青森", x:13, y:1, status:"posted",
+   food:"126%", foodValue:null, water:"約170%", siege:"100%（上限）",
+   special:"りんごの収穫量は全国の約6割。にんにく約66%、ごぼう約40%。どれも全国1位です。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／国土交通省「水資源賦存量」÷2015年国勢調査人口／農林水産省「青森県の姿2026」",
+   reel:"https://www.instagram.com/reel/Df4rakuj6hP/"},
+  {name:"秋田", x:12, y:2, status:"posted", note:"2026年11月22日 投稿済み",
+   food:"221%", foodValue:"194%", water:"約410%", siege:"100%",
+   special:"お米の収穫量は全国3位。比内地鶏は令和6年に43.2万羽が出荷されています。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／水は国土交通省「水資源賦存量」と国勢調査人口からの算出値",
+   reel:"https://www.instagram.com/reel/DgCi8uTiRH4/"},
+  {name:"岩手", x:13, y:2, status:"posted",
+   food:"113%", foodValue:"203%", water:"約340%", siege:"100%",
+   special:"りんどう（切り花）の出荷量は、令和6年で4,080万本、全国1位です。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／水は国土交通省「水資源賦存量」と国勢調査人口からの試算",
+   reel:"https://www.instagram.com/reel/Df_Nh9pCfOJ/"},
+  {name:"山形", x:12, y:3, status:"none"},
+  {name:"宮城", x:13, y:3, status:"none"},
+  {name:"新潟", x:11, y:4, status:"none"},
+  {name:"福島", x:12, y:4, status:"soon", note:"2026年11月23日 投稿予定",
+   food:"86%", foodValue:"112%", water:"約200%", siege:"93%",
+   special:"日本酒の金賞受賞数は全国1位。ももの収穫量は令和6年で29,100t、全国2位です。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／水は国土交通省「水資源賦存量」と国勢調査人口からの算出値",
+   reel:null},
+  {name:"富山", x:10, y:4, status:"none"},
+  {name:"石川", x:9, y:5, status:"none"},
+  {name:"長野", x:11, y:5, status:"none"},
+  {name:"群馬", x:12, y:5, status:"none"},
+  {name:"栃木", x:13, y:5, status:"none"},
+  {name:"福井", x:9, y:6, status:"none"},
+  {name:"岐阜", x:10, y:6, status:"posted",
+   food:"26%", foodValue:"47%", water:"約280%", siege:"約63%",
+   special:"養殖あゆは全国の4分の1以上。富有柿は、岐阜で生まれた柿です。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／水は国土交通省「水資源賦存量」と国勢調査人口からの算出値",
+   reel:"https://www.instagram.com/reel/Df9Y-FSDjVA/"},
+  {name:"山梨", x:11, y:6, status:"none"},
+  {name:"埼玉", x:12, y:6, status:"none"},
+  {name:"茨城", x:13, y:6, status:"none"},
+  {name:"滋賀", x:9, y:7, status:"none"},
+  {name:"愛知", x:10, y:7, status:"none"},
+  {name:"静岡", x:11, y:7, status:"posted",
+   food:"15%", foodValue:"50%", water:"約120%", siege:"約58%",
+   special:"茶畑は全国の34.7%、水わさび（根茎）は全国の53.0%。どちらも全国1位です。カロリーで数えると、お茶やわさびは数字に出にくい。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／国土交通省「水資源賦存量」÷2015年国勢調査人口",
+   reel:"https://www.instagram.com/reel/Df7AajjDzWT/"},
+  {name:"東京", x:12, y:7, status:"none"},
+  {name:"千葉", x:13, y:7, status:"none"},
+  {name:"兵庫", x:7, y:7, status:"posted",
+   food:"15%", foodValue:"39%", water:"41%", siege:"約28%",
+   special:"酒米・山田錦は全国の57%。淡路島は食べ物 約65%・水 約130%・籠城力 約83%（いずれも推計）。たまねぎの畑は、県内の約9割が淡路島です。",
+   source:"農林水産省「都道府県別食料自給率」（令和6年度）／国土交通省・兵庫県の公表値／淡路島の数字は推計",
+   reel:"https://www.instagram.com/reel/Df8-Rzljy8-/"},
+  {name:"京都", x:8, y:7, status:"none"},
+  {name:"鳥取", x:6, y:6, status:"none"},
+  {name:"岡山", x:6, y:7, status:"none"},
+  {name:"島根", x:5, y:6, status:"none"},
+  {name:"広島", x:5, y:7, status:"none"},
+  {name:"山口", x:4, y:7, status:"none"},
+  {name:"大阪", x:8, y:8, status:"none"},
+  {name:"奈良", x:9, y:8, status:"none"},
+  {name:"三重", x:10, y:8, status:"none"},
+  {name:"神奈川", x:12, y:8, status:"none"},
+  {name:"福岡", x:3, y:8, status:"none"},
+  {name:"和歌山", x:9, y:9, status:"none"},
+  {name:"香川", x:6, y:9, status:"none"},
+  {name:"徳島", x:7, y:9, status:"none"},
+  {name:"愛媛", x:5, y:9, status:"none"},
+  {name:"佐賀", x:2, y:9, status:"none"},
+  {name:"長崎", x:1, y:9, status:"none"},
+  {name:"大分", x:4, y:9, status:"none"},
+  {name:"高知", x:6, y:10, status:"none"},
+  {name:"熊本", x:2, y:10, status:"none"},
+  {name:"宮崎", x:3, y:10, status:"none"},
+  {name:"鹿児島", x:2, y:11, status:"none"},
+  {name:"沖縄", x:1, y:13, status:"none"}
+];
+
+const grid = document.getElementById("mapGrid");
+const card = document.getElementById("dataCard");
+let selected = null;
+
+function renderCard(p){
+  if(!p || p.status === "none"){
+    card.innerHTML = "<h3>" + (p ? p.name : "県を選んでください") + "</h3>" +
+      "<p class='special' style='margin-top:8px;color:var(--muted)'>この県は「これから」。投稿されたら、ここに実データカードが付きます。</p>";
+    return;
+  }
+  const badge = p.status === "posted" ? "投稿済み" : (p.note || "近日投稿");
+  let stats = "<div class='stats'>" +
+    "<div class='stat'><div class='k'>食べ物（カロリーベース食料自給率）</div><div class='v'>" + p.food + "</div></div>";
+  if(p.foodValue){
+    stats += "<div class='stat'><div class='k'>食べ物（生産額ベース）</div><div class='v'>" + p.foodValue + "</div></div>";
+  }
+  stats += "<div class='stat'><div class='k'>水（全国平均を100%として）</div><div class='v'>" + p.water + "</div></div>" +
+    "<div class='stat'><div class='k'>籠城力（食べ物と水の平均）</div><div class='v'>" + p.siege + "</div></div></div>";
+  card.innerHTML = "<h3>" + p.name + "<small>" + badge + "</small></h3>" + stats +
+    "<p class='special'>" + p.special + "</p>" +
+    "<p class='source'>出典：" + p.source + "</p>" +
+    (p.reel ? "<a class='btn' href='" + p.reel + "' target='_blank' rel='noopener'>Instagramで動画を見る</a>"
+            : "<a class='btn sub' href='https://www.instagram.com/moshimo_infra/' target='_blank' rel='noopener'>@moshimo_infra をフォローして待つ</a>");
+}
+
+PREFS.forEach(p => {
+  const d = document.createElement("div");
+  d.className = "tile " + p.status;
+  d.style.gridColumn = (p.x + 1);
+  d.style.gridRow = (p.y + 1);
+  d.textContent = p.name;
+  if(p.status !== "none"){
+    d.addEventListener("click", () => {
+      if(selected) selected.classList.remove("selected");
+      selected = d; d.classList.add("selected");
+      renderCard(p);
+      card.scrollIntoView({behavior:"smooth", block:"nearest"});
+    });
+  }
+  grid.appendChild(d);
+});
+
+document.getElementById("count-posted").textContent =
+  PREFS.filter(p => p.status === "posted").length + "県 ＋ 近日" + PREFS.filter(p => p.status === "soon").length + "県";
+
+renderCard(PREFS.find(p => p.name === "岩手"));
+</script>
+</body>
+</html>
