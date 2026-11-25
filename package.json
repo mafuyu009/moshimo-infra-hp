@@ -1,0 +1,27 @@
+{
+  "name": "moshimo-infra-hp",
+  "version": "1.0.0",
+  "description": "作成: 2026-11-22／公開方式を Altare に改訂: 2026-11-22夜 位置づけ: `mapped-earth-analysis-hp-roadmap.md` のフェーズ1（軽い静的HP5ページ相当を1枚に集約）＋フェーズ2「育つ日本地図」の先行試作。単一ファイル `index.html` のみで完結する静的サイト。 現況メモ: 投稿済みは6県（青森・秋田・岩手・静岡・兵庫・岐阜、秋田はリールURL入りで更新済み）。福島は 2026-11-23 投稿予定で `soon` 表示中。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mafuyu009/moshimo-infra-hp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mafuyu009/moshimo-infra-hp/issues"
+  },
+  "homepage": "https://github.com/mafuyu009/moshimo-infra-hp#readme",
+  "dependencies": {
+    "opentype.js": "^2.0.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}
